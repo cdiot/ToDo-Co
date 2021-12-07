@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Form\UserType;
 use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,14 +26,17 @@ class UserController extends AbstractController
 
     /**
      * @Route("/users", name="user_list")
+     * @IsGranted("ROLE_ADMIN")
      */
     public function listAction(UserRepository $userRepository)
     {
+        $this->denyAccessUnlessGranted('GET', $this->getUser());
         return $this->render('user/list.html.twig', ['users' => $userRepository->findAll()]);
     }
 
     /**
      * @Route("/users/create", name="user_create")
+     * @IsGranted("ROLE_ADMIN")
      */
     public function createAction(Request $request)
     {
@@ -60,6 +64,7 @@ class UserController extends AbstractController
 
     /**
      * @Route("/users/{id}/edit", name="user_edit")
+     * @IsGranted("ROLE_ADMIN")
      */
     public function editAction(User $user, Request $request)
     {

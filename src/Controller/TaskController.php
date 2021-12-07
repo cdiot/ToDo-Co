@@ -6,6 +6,7 @@ use App\Entity\Task;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -30,6 +31,7 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/tasks/create", name="task_create")
+     * @IsGranted("CRUD")
      */
     public function createAction(Request $request)
     {
@@ -54,6 +56,7 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/tasks/{id}/edit", name="task_edit")
+     * @IsGranted("CRUD")
      */
     public function editAction(Task $task, Request $request)
     {
@@ -90,9 +93,12 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/tasks/{id}/delete", name="task_delete")
+     * @IsGranted("CRUD")
      */
     public function deleteTaskAction(Task $task)
     {
+        $this->denyAccessUnlessGranted('CRUD', $task);
+
         $this->entityManager->remove($task);
         $this->entityManager->flush();
 
