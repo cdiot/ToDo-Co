@@ -14,7 +14,7 @@ final class Version20211206162216 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Add Task and User entity';
     }
 
     public function up(Schema $schema): void
