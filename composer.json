@@ -78,6 +78,19 @@
         "symfony/polyfill-php72": "*"
     },
     "scripts": {
+        "reset": [
+            "symfony console d:d:d --force",
+            "symfony console d:d:c",
+            "symfony console d:m:m -n",
+            "symfony console d:f:l -n"
+        ],
+        "test": [
+            "symfony console --env=test d:d:d --force",
+            "symfony console --env=test d:d:c",
+            "symfony console --env=test d:m:m -n",
+            "symfony console --env=test d:f:l -n",
+            "symfony php bin/phpunit --testdox"
+        ],
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
