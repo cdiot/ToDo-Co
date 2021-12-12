@@ -2,6 +2,7 @@
 
 namespace App\Tests;
 
+use App\Entity\Task;
 use App\Entity\User;
 use PHPUnit\Framework\TestCase;
 
@@ -45,5 +46,20 @@ class UserTest extends TestCase
         $this->assertEmpty($user->getUsername());
         $this->assertEmpty($user->getEmail());
         $this->assertEmpty($user->getPassword());
+        $this->assertEmpty($user->getId());
+    }
+
+    public function testAddGetRemoveTasks()
+    {
+        $user = new User();
+        $task = new Task();
+
+        $this->assertEmpty($user->getTasks());
+
+        $user->addTask($task);
+        $this->assertContains($task, $user->getTasks());
+
+        $user->removeTask($task);
+        $this->assertEmpty($user->getTasks());
     }
 }
