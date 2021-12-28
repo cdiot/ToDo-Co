@@ -2,41 +2,67 @@
 
 namespace App\Security\Voter;
 
+use App\Entity\Task;
+use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\Security;
 
 class TaskVoter extends Voter
 {
-    protected function supports(string $attribute, $subject): bool
+    const CRUD = 'crud';
+
+    private $security;
+
+    public function __construct(Security $security)
     {
-        // replace with your own logic
-        // https://symfony.com/doc/current/security/voters.html
-        return in_array($attribute, ['CRUD'])
-            && $subject instanceof \App\Entity\Task;
+        $this->security = $security;
     }
 
-    protected function voteOnAttribute(string $attribute, $task, TokenInterface $token): bool
+    protected function supports(string $attribute, $subject): bool
     {
-        $user = $token->getUser();
-        // if the user is anonymous, do not grant access
-        if (!$user instanceof UserInterface) {
+        // if the attribute isn't one we support, return false
+        if (!in_array($attribute, [self::CRUD])) {
             return false;
         }
 
-        // ... (check conditions and return true to grant permission) ...
-        switch ($attribute) {
-            case 'CRUD':
-                if ($user == $task->getUser()) {
-                    return true;
-                }
-
-                if (in_array('ROLE_ADMIN', $user->getRoles()) && empty($task->getUser())) {
-                    return true;
-                }
-                break;
+        // only vote on `Post` objects
+        if (!$subject instanceof Task) {
+            return false;
         }
 
-        return false;
+        return true;
+    }
+
+    protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool
+    {
+        $user = $token->getUser();
+        // if the user is anonymous, do not grant access
+        if (!$user instanceof User) {
+            return false;
+        }
+
+        // ROLE_ADMIN can do anything! The power!
+        if ($this->security->isGranted('ROLE_ADMIN')) {
+            return true;
+        }
+
+        // you know $subject is a Task object, thanks to `supports()`
+        /** @var Task $task */
+        $task = $subject;
+
+        // ... (check conditions and return true to grant permission) ...
+        switch ($attribute) {
+            case self::CRUD:
+                return $this->canCrud($task, $user);
+        }
+
+        throw new \LogicException('This code should not be reached!');
+    }
+
+    private function canCrud(Task $task, User $user): bool
+    {
+        return $user === $task->getUser();
     }
 }

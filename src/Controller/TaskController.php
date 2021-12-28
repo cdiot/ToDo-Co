@@ -31,13 +31,14 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/tasks/create", name="task_create")
-     * @IsGranted("CRUD")
      */
     public function createAction(Request $request)
     {
         $task = new Task();
         $task->setUser($this->getUser());
         $form = $this->createForm(TaskType::class, $task);
+
+        $this->denyAccessUnlessGranted('crud', $task);
 
         $form->handleRequest($request);
 
@@ -56,10 +57,11 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/tasks/{id}/edit", name="task_edit")
-     * @IsGranted("CRUD")
      */
     public function editAction(Task $task, Request $request)
     {
+        $this->denyAccessUnlessGranted('crud', $task);
+
         $form = $this->createForm(TaskType::class, $task);
 
         $form->handleRequest($request);
@@ -93,11 +95,10 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/tasks/{id}/delete", name="task_delete")
-     * @IsGranted("CRUD")
      */
     public function deleteTaskAction(Task $task)
     {
-        $this->denyAccessUnlessGranted('CRUD', $task);
+        $this->denyAccessUnlessGranted('crud', $task);
 
         $this->entityManager->remove($task);
         $this->entityManager->flush();
