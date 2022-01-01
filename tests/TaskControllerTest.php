@@ -14,14 +14,14 @@ class TaskControllerTest extends WebTestCase
         // get or create the user somehow (e.g. creating some users only
         // for tests while loading the test fixtures)
         $userRepository = static::getContainer()->get(UserRepository::class);
-        $testUser = $userRepository->findOneByEmail('foo@gmail.com');
+        $testUser = $userRepository->findOneByEmail('bar@gmail.com');
 
         $client->loginUser($testUser);
 
         // user is now logged in, so you can test protected resources
-        $crawler = $client->request('GET', '/tasks');
+        $client->request('GET', '/tasks');
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('p', 'On doit définir le budget prévisionnel de l\'année prochaine pour l\'équipe de comm.');
+        $this->assertSelectorTextContains('p', 'On doit définir');
     }
 
     public function testShouldDisplayCreate()
@@ -31,14 +31,19 @@ class TaskControllerTest extends WebTestCase
         // get or create the user somehow (e.g. creating some users only
         // for tests while loading the test fixtures)
         $userRepository = static::getContainer()->get(UserRepository::class);
-        $testUser = $userRepository->findOneByEmail('foo@gmail.com');
+        $testUser = $userRepository->findOneByEmail('bar@gmail.com');
 
         $client->loginUser($testUser);
 
         // user is now logged in, so you can test protected resources
         $crawler = $client->request('GET', '/tasks/create');
+        $crawler = $client->submitForm('Ajouter', [
+            'task[title]' => 'Ma super tache!',
+            'task[content]' => 'Une tache unique en sont genre!'
+        ]);
+        $this->assertResponseRedirects();
+        $crawler = $client->followRedirect();
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('button', 'Ajouter');
     }
 
     public function testShouldDisplayEdit()
@@ -48,14 +53,29 @@ class TaskControllerTest extends WebTestCase
         // get or create the user somehow (e.g. creating some users only
         // for tests while loading the test fixtures)
         $userRepository = static::getContainer()->get(UserRepository::class);
-        $testUser = $userRepository->findOneByEmail('foo@gmail.com');
+        $testUser = $userRepository->findOneByEmail('bar@gmail.com');
 
         $client->loginUser($testUser);
 
         // user is now logged in, so you can test protected resources
-        $crawler = $client->request('GET', '/tasks/1/edit');
+        $crawler = $client->request('GET', '/tasks/3/edit');
+
+        // select the button
+        $buttonCrawlerNode = $crawler->selectButton('Modifier');
+
+        // retrieve the Form object for the form belonging to this button
+        $form = $buttonCrawlerNode->form();
+
+        // set values on a form object
+        $form['task[title]'] = 'Ma nouvelle super tache!';
+        $form['task[content]'] = 'Une nouvelle tache unique en sont genre!';
+
+        // submit the Form object
+        $client->submit($form);
+
+        $this->assertResponseRedirects();
+        $crawler = $client->followRedirect();
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('button', 'Modifier');
     }
 
     public function testShouldDisplayToggle()
@@ -65,13 +85,15 @@ class TaskControllerTest extends WebTestCase
         // get or create the user somehow (e.g. creating some users only
         // for tests while loading the test fixtures)
         $userRepository = static::getContainer()->get(UserRepository::class);
-        $testUser = $userRepository->findOneByEmail('foo@gmail.com');
+        $testUser = $userRepository->findOneByEmail('bar@gmail.com');
 
         $client->loginUser($testUser);
 
         // user is now logged in, so you can test protected resources
-        $crawler = $client->request('GET', '/tasks/1/toggle');
+        $client->request('GET', '/tasks/1/toggle');
         $this->assertResponseRedirects();
+        $crawler = $client->followRedirect();
+        $this->assertResponseIsSuccessful();
     }
 
     public function testShouldDisplayDelete()
@@ -81,12 +103,14 @@ class TaskControllerTest extends WebTestCase
         // get or create the user somehow (e.g. creating some users only
         // for tests while loading the test fixtures)
         $userRepository = static::getContainer()->get(UserRepository::class);
-        $testUser = $userRepository->findOneByEmail('foo@gmail.com');
+        $testUser = $userRepository->findOneByEmail('bar@gmail.com');
 
         $client->loginUser($testUser);
 
         // user is now logged in, so you can test protected resources
-        $crawler = $client->request('GET', '/tasks/1/delete');
+        $client->request('GET', '/tasks/3/delete');
         $this->assertResponseRedirects();
+        $crawler = $client->followRedirect();
+        $this->assertResponseIsSuccessful();
     }
 }
