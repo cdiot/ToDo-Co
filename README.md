@@ -45,16 +45,28 @@ Pour générer le test coverage suivait cette commande
 symfony php bin/phpunit --coverage-html var/log/test/test-coverage
 ```
 
-Après ça pour voir le résultat suivre cette commande `var/log/test/test-coverage/index.html`.
+Après ça pour consulter le résultat suivre ce lien `127.0.0.1:5500/var/log/test/test-coverage/index.html`.
 
-### Lien vers la documention
+### Lien vers le dossier de la documentation technique
 
 ```bash
-https://127.0.0.1:8000/documentation/
+documentation/guide_authentification.pdf
 ```
 
-### Lien qualité 
+### Lien vers le dossier de la documentation technique de contribution
+
+```bash
+documentation/contribution.pdf
+```
+
+### Lien audit de qualité de code 
 
 ```bash
 https://app.codacy.com/gh/cdiot/ToDo-Co/dashboard
+```
+
+### Lien vers le dossier de la documentation concernant l'audit de performance
+
+```bash
+documentation/audit_de_performance.pdf
 ```

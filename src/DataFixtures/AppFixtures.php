@@ -34,6 +34,12 @@ class AppFixtures extends Fixture
             'content' => 'On doit passer en production le travail effectué par l\'équipe de développement pour vendredi.',
             'isDone' => 0,
             'user' => 1
+        ],
+        3 => [
+            'title' => 'Ma tache',
+            'content' => 'Ma super tache.',
+            'isDone' => 1,
+            'user' => 2
         ]
     ];
 
@@ -49,6 +55,12 @@ class AppFixtures extends Fixture
             'email' => 'bar@gmail.com',
             'roles' => 'ROLE_ADMIN',
             'password' => '123456'
+        ],
+        3 => [
+            'username' => 'anonyme',
+            'email' => 'anonyme@gmail.com',
+            'roles' => 'ROLE_USER',
+            'password' => 'azerty'
         ],
     ];
 
