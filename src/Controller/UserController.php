@@ -36,7 +36,6 @@ class UserController extends AbstractController
 
     /**
      * @Route("/users/create", name="user_create")
-     * @IsGranted("ROLE_ADMIN")
      */
     public function createAction(Request $request)
     {

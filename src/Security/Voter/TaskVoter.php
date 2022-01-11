@@ -23,16 +23,8 @@ class TaskVoter extends Voter
     protected function supports(string $attribute, $subject): bool
     {
         // if the attribute isn't one we support, return false
-        if (!in_array($attribute, [self::CRUD])) {
-            return false;
-        }
-
-        // only vote on `Post` objects
-        if (!$subject instanceof Task) {
-            return false;
-        }
-
-        return true;
+        return in_array($attribute, [self::CRUD])
+            && $subject instanceof Task;
     }
 
     protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool

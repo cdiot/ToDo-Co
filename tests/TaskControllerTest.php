@@ -24,8 +24,6 @@ class TaskControllerTest extends WebTestCase
 
     public function testShouldDisplayList()
     {
-        //$client = static::createClient();
-
         // get or create the user somehow (e.g. creating some users only
         // for tests while loading the test fixtures)
         $userRepository = static::getContainer()->get(UserRepository::class);
@@ -41,8 +39,6 @@ class TaskControllerTest extends WebTestCase
 
     public function testShouldDisplayCreate()
     {
-        //$client = static::createClient();
-
         // get or create the user somehow (e.g. creating some users only
         // for tests while loading the test fixtures)
         $userRepository = static::getContainer()->get(UserRepository::class);
@@ -63,8 +59,6 @@ class TaskControllerTest extends WebTestCase
 
     public function testShouldDisplayEdit()
     {
-        // $client = static::createClient();
-
         $this->databaseTool->loadFixtures([
             AppFixtures::class
         ]);
@@ -99,8 +93,6 @@ class TaskControllerTest extends WebTestCase
 
     public function testShouldDisplayToggle()
     {
-        // $client = static::createClient();
-
         // get or create the user somehow (e.g. creating some users only
         // for tests while loading the test fixtures)
         $userRepository = static::getContainer()->get(UserRepository::class);
@@ -117,14 +109,6 @@ class TaskControllerTest extends WebTestCase
 
     public function testShouldDisplayDelete()
     {
-        /*
-        $this->databaseTool->loadFixtures([
-            AppFixtures::class
-        ]);
-        */
-
-        //  $client = static::createClient();
-
         // get or create the user somehow (e.g. creating some users only
         // for tests while loading the test fixtures)
         $userRepository = static::getContainer()->get(UserRepository::class);
@@ -137,5 +121,40 @@ class TaskControllerTest extends WebTestCase
         $this->assertResponseRedirects();
         $crawler = $this->client->followRedirect();
         $this->assertResponseIsSuccessful();
+    }
+
+    public function testCantDeleteBadUser()
+    {
+        // get or create the user somehow (e.g. creating some users only
+        // for tests while loading the test fixtures)
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $testUser = $userRepository->findOneByEmail('anonyme@gmail.com');
+
+        $this->client->loginUser($testUser);
+
+        // user is now logged in, so you can test protected resources
+        $this->client->request('GET', '/tasks/2/delete');
+        $this->assertEquals(403, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testCantDeleteNoUser()
+    {
+        // user is now logged in, so you can test protected resources
+        $this->client->request('GET', '/tasks/2/delete');
+        $this->assertEquals(302, $this->client->getResponse()->getStatusCode());
+    }
+
+    public function testCantDeleteNotExist()
+    {
+        // get or create the user somehow (e.g. creating some users only
+        // for tests while loading the test fixtures)
+        $userRepository = static::getContainer()->get(UserRepository::class);
+        $testUser = $userRepository->findOneByEmail('bar@gmail.com');
+
+        $this->client->loginUser($testUser);
+
+        // user is now logged in, so you can test protected resources
+        $this->client->request('GET', '/tasks/5/delete');
+        $this->assertEquals(404, $this->client->getResponse()->getStatusCode());
     }
 }
